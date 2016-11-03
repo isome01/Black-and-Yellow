@@ -11,4 +11,4 @@ composer.gotoScene( "loadingscene" )
 
 
 
-return scenes
+return scene
