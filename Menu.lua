@@ -1,4 +1,4 @@
----i'm here right now
+--praise me
 local composer = require( "composer" )
 local widget = require("widget")
 
