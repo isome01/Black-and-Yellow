@@ -6,6 +6,7 @@ local physics = require("physics")
 physics.start()
 physics.setGravity(0,4.8)
 
+
 function scene:create()
 	contentX = display.contentCenterX
 	contentY = display.contentCenterY

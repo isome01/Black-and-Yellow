@@ -15,15 +15,16 @@ function scene:create()
 	_G.musicnum = 0
 
 ---------------------------------------------------------------------music 
+-- turn this on later
 -- local backgroundMusic = audio.loadStream( "1.mp3" )
 -- local _G.backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=-1, fadein=1000 } )
 -----------------------------------------------------------
-	_G.randomsongMusicChannel = audio.loadSound( "1.mp3" )
-	if ( _G.musicnum == 0 ) then
-		audio.play( randomsongMusicChannel, {loops= -1, channel=1} )
-	else
-		audio.stop( 1 )
-	end
+	-- _G.randomsongMusicChannel = audio.loadSound( "1.mp3" )
+	-- if ( _G.musicnum == 0 ) then
+	-- 	audio.play( randomsongMusicChannel, {loops= -1, channel=1} )
+	-- else
+	-- 	audio.stop( 1 )
+	-- end
 --------------------------------------------------------------------background
 
 	local background1 = widget.newButton
