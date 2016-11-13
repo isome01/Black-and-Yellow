@@ -10,5 +10,4 @@ composer.recycleOnSceneChange = true
 composer.gotoScene( "loadingscene" )
 
 
-
 return scene

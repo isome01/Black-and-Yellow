@@ -22,9 +22,7 @@ local text = display.newText("Volumn On: ", 70, contentY - 100, nil, 20)
 	
 local text2 = display.newText("Volumn Off: ", 72, contentY - 70, nil, 20)
 	text2:setFillColor(1,0,0)
------------------------------
-testVon = "F"
-testVoff = "T"
+
 ---------------------------------------------------------------------------VolumnOn Wudget
 	local function volumnOn( event )
 		local phase = event.phase
