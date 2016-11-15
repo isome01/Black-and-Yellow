@@ -1,29 +1,20 @@
+--notes: 1:change the time
+--2: tap on tap make apple disappear, add score
+--3: connect to database, and keep track high score.
+--4: you die when apple hits the ground
+--need to put tree to the back
 local composer = require("composer")
 local widget = require ("widget")
-local scene = composer.newScene()	
-
---------------------------------------------- change on the apple (initialize)
-
-
----------------------------------------------end
-
---[[Here is where we should load our variables
-~Note: the problem with the removeSelf() function in the appleButton(event) is that when you run the function,
- it runs over and over again (Because CoronaSDK/Lua...) When it runs over and over again, the function expects
- the declaration of the apple (but, as I stated, the problem is that it's being removed) which essential causes
- the runtime error.
-]]
---Button functions and such.
-
----------------------------------------------end
+local scene = composer.newScene()
+local physics = require("physics")	-- add this later
 
 function scene:create()
 
-	local timer = 60 -- when timer runs out, ends the game
+	local count = 60 -- when timer runs out, ends the game
 	local appleTable = {}
 	local numOfApple = 0
 	local highestScoreTable = {}
-	local tick = 1000 -- time between game loop in mm
+	local tick = 5000 --
 
 	local sceneGroup = self.view
 	local Warning = 0
@@ -39,7 +30,7 @@ function scene:create()
 		if "ended" == phase then
 			if Warning == 0 then
 				Warning = Warning + 1
-				print( "i'm tapped" )
+				print( "Tree:i'm tapped" )
 				--do some sort of animation to tell user not to tap the tree.
 			else
 				if treeAnger == 10 then -- check if to use the skill or not
@@ -74,40 +65,27 @@ function scene:create()
 			print("I'm tapped")
 		end
 		
-		if "ended" == phase then
-			print("tap the next apple")
-		end
-		
 	end
-	
-	--[[
-	local appleButton1 = widget.newButton
-	{
-		left = math.random(170,440),
-		top = math.random(30,200),
-		width = 20,
-		height = 20,
-		defaultFile = "Images/apple.png",
-		id = "AppleButton1",
-		onEvent = appleButton,
-	}
-	
-	local function loadApple()
-		for i = 0, 3, 1 do
-			numOfApple = numOfApple + 1
-			appleTable[numOfApple] = appleButton1 --add apple to table
-			physics.addBody(appleTable[numOfApple],{density=1,friction=0.4,bounce=1})
-			appleTable[numOfApple].myName="apple"
-		end
-	end]]--
-	
+
 	local function loadApple()
 		numOfApple = numOfApple + 1
-		appleTable[numOfApple] = display.newImageRect("Images/apple.png", 20, 20)--add apple to table
-		physics.addBody(appleTable[numOfApple],{density=1,friction=0.4,bounce=1})
+		local appleButton1 = widget.newButton -- we need to declare the apple in this function
+		{
+			left = math.random(170,440),
+			top = math.random(30,200),
+			width = 20,
+			height = 20,
+			defaultFile = "Images/apple.png",
+			id = "AppleButton1",
+			onEvent = appleButton,
+		}
+		sceneGroup:insert(appleButton1) -- add the new apple into the scene
+		print("1 more apple")
+
+		appleTable[numOfApple] = appleButton1 --add apple to table
+		--physics.addBody(appleTable[numOfApple],{density=1,friction=0.4,bounce=1})
 		appleTable[numOfApple].myName="apple"
-		appleTable[numOfApple].x = math.random(170, 440)
-		appleTable[numOfApple].y = math.random(30, 200)
+
 	end
 	
 	local function tapApple(event)
@@ -118,6 +96,7 @@ function scene:create()
 	end
 	
 	local function gameLoop()
+		print("gameLoop")
 		loadApple()--load a new apple
 		-- if score > 2000 and tick > 800 then
 		-- 	tick = 800
@@ -132,24 +111,22 @@ function scene:create()
 		-- elseif score > 25000 and tick > 400 then
 		--  tick = 400
 		-- end
+		
 	end
-
 	function startGame()
 		--appleTable:addEventListener("tap", tapApple)
     	--Runtime:addEventListener("collision", onCollision)
     	timer.performWithDelay(tick, gameLoop, 0)-- a new apple should appear every second
 	end
-
+	startGame()
 	-----------------------------------------
 
 	----------------------------------sceneGroup
 	sceneGroup:insert(treeButton1)
-	--sceneGroup:insert(appleButton1)
 end
 
-function scene:show()
---This here is the unsolved problem:	
-	startGame()
+function scene:show()	
+	
 end
 
 function scene:hide()
@@ -164,6 +141,5 @@ scene:addEventListener("create", scene)
 scene:addEventListener("show", scene)
 scene:addEventListener("hide", scene)
 scene:addEventListener("destory", scene)
-print("reached")
 
 return scene

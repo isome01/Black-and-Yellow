@@ -1,6 +1,7 @@
 ---i'm here right now
 local composer = require( "composer" )
 local widget = require("widget")
+require("Level1")
 
 local scene = composer.newScene()
 
@@ -31,7 +32,6 @@ function scene:create()
 	local function startButton( event )
 		local phase = event.phase
 			if "ended" == phase then 
-				
 				composer.gotoScene("Level1")
 			end
 	end
