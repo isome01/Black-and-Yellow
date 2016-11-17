@@ -10,11 +10,11 @@ local physics = require("physics")	-- add this later
 
 function scene:create()
 
-	local count = 60 -- when timer runs out, ends the game
+	local countdown = 60 -- when timer runs out, ends the game
 	local appleTable = {}
 	local numOfApple = 0
 	local highestScoreTable = {}
-	local tick = 5000 --
+	local tick = 1000 --
 
 	local sceneGroup = self.view
 	local Warning = 0
@@ -57,12 +57,13 @@ function scene:create()
 	---------------------------------------- apple 
 	local function appleButton( event )
 		local phase = event.phase
-		myScore = myScore + appleScore
-		timer = timer + 5
+		
 	
 		if "began" == phase then 
-			--appleButton1.removeSelf()
-			print("I'm tapped")
+		    appleTable[event.target.id] = nil         -- We remove object from table
+			event.target:removeSelf()        -- Also remember to remove from display
+			myScore = myScore + appleScore -- for some reason this doesn't work as excepted.
+			countdown = countdown + 5
 		end
 		
 	end
@@ -123,10 +124,16 @@ function scene:create()
 
 	----------------------------------sceneGroup
 	sceneGroup:insert(treeButton1)
+
+	local scoreText = display.newText("Score: ",0,20,native.systemFont,20)
+	scoreText:setFillColor( 0.64, 0.73, 0.8 )
+	local scoreNum = display.newText(myScore,30,20,native.systemFont,20)
+	scoreNum:setFillColor( 0.34, 0.73, 0.4 )
 end
 
 function scene:show()	
 	
+
 end
 
 function scene:hide()

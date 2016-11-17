@@ -10,15 +10,15 @@ _G.musicnum = 0
 ---------------------------------------------------------------------music 
 -- turn this on later
 -- The solution to the music problem. You were trying to make the background music into a variable with a '.' 
-local backgroundMusic = audio.loadStream( "1.mp3" )
-local _GbackgroundMusicChannel = audio.play( backgroundMusic, { channel = 1, loops = -1, fadein = 1000 } )
+-- local backgroundMusic = audio.loadStream( "1.mp3" )
+-- local _GbackgroundMusicChannel = audio.play( backgroundMusic, { channel = 1, loops = -1, fadein = 1000 } )
 -----------------------------------------------------------
-_G.randomsongMusicChannel = audio.loadSound( "1.mp3" )
-if ( _G.musicnum == 0 ) then
-	audio.play( randomsongMusicChannel, {loops= -1, channel=1} )
-else
-	audio.stop( 1 )
-end
+-- _G.randomsongMusicChannel = audio.loadSound( "1.mp3" )
+-- if ( _G.musicnum == 0 ) then
+-- 	audio.play( randomsongMusicChannel, {loops= -1, channel=1} )
+-- else
+-- 	audio.stop( 1 )
+-- end
 	
 testVon = "F"
 testVoff = "T"
