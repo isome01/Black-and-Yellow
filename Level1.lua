@@ -14,6 +14,7 @@ function scene:create()
 --All of our fancy variables n such.
 	local countdown = 60 -- when timer runs out, ends the game
 	local appleTable = {}
+	local removedApples = {} -- very immature and half baked, but we can work with a table to store all of our removed apples
 	local numOfApple = 0
 	local highestScoreTable = {}
 	local tick = 1000 --
@@ -23,7 +24,7 @@ function scene:create()
 	local myScore = 0
 	local treeAnger = 0
 	local appleScore = 100 
-	
+	local appleNumber = 1
 	
 	
 	--Here is where we will first blit our information onto the screen
@@ -41,37 +42,39 @@ function scene:create()
 	
 	
 	----------------------------Tree: everytime the tree is tapped will store energy to itself. when it is full, it will shake off all of the apples.
-	local function treeButton( event )
-		local phase = event.phase
-		treeAnger = treeAnger +1 
-
-		if "ended" == phase then
-			if Warning == 0 then
-				Warning = Warning + 1
-				print( "Tree:i'm tapped" )
-				--do some sort of animation to tell user not to tap the tree.
+	local function treeButton()
+		treeAnger = treeAnger + 1 
+		print("Tree is tapped.", treeAnger)
+		
+		if (Warning == 0) then
+			Warning = Warning + 1
+			--do some sort of animation to tell user not to tap the tree.
+			
+		else
+			if (treeAnger >= 2) then -- check if to use the skill or not
+				-- shake off all the apple
+				-- Michael says "Will do, sir!"
 				
-			else
-				if (treeAnger == 10) then -- check if to use the skill or not
-					-- shake off all the apple
-					-- Michael says "Will do, sir!"
-					
-					
-					for index = 0, numOfApple, 1 do
-						if (appleTable[index] ~= nil) then
-							print("This object is not nil.")
-							apple = appleTable[index]
-							physics.addBody(apple, {density = 10, friction = 0, bounce = 0} )
-							
-						else 
-							print("This object is nil.")
-						end
-					end
-					
-					--We just add physics bodies to the table of objects, but this turned out to not work so hot: its detecting the values as nil values.
+				
+				for index = 0, numOfApple, 1 do
+					if (appleTable[index]~= nil) then
+						print(appleTable[index].id) 
+						
+						apple = appleTable[index]
+						physics.addBody(apple, {density = 100, friction = 0, bounce = 0} )
+						
+					else 
+						print("This object is nil.")
 
-					treeAnger = 0
+					end
 				end
+				
+				--We just add physics bodies to the table of objects, but this turned out to not work so hot: its detecting the values as nil values.
+				--numOfApple = 0
+				treeAnger = 0
+				numOfApple = 0
+				appleNumber = 1
+				
 			end
 		end
 	end
@@ -84,8 +87,8 @@ function scene:create()
 		height = 320,
 		defaultFile = "Images/tree.png",
 		id = "Background1",
-		onEvent = treeButton,
 	}
+	treeButton1:addEventListener("tap", treeButton)
 
 	----------------------------------- end
 
@@ -95,12 +98,18 @@ function scene:create()
 		
 	
 		if "began" == phase then 
-		    appleTable[event.target.id] = nil         -- We remove object from table
+		
+			-- this if statement is only added because we are tapping the tree through the apple, so we
+			--have to reset treeAnger
+			
+			treeAnger = treeAnger - 1
+			print("Apple number", event.target.id)
 			event.target:removeSelf()        -- Also remember to remove from display
+		    appleTable[event.target.id] = nil         -- We remove object from table
 			myScore = myScore + appleScore -- for some reason this doesn't work as excepted.
 			updateScore()
 			countdown = countdown + 5
-			numOfApple = numOfApple - 1
+			--numOfApple = numOfApple - 1
 			
 		end
 		
@@ -108,7 +117,7 @@ function scene:create()
 
 	local function loadApple()
 		
-		if (numOfApple ~= 10) then
+		if (numOfApple <= 5) then
 		
 			numOfApple = numOfApple + 1
 			local appleButton1 = widget.newButton -- we need to declare the apple in this function
@@ -118,14 +127,17 @@ function scene:create()
 				width = 20,
 				height = 20,
 				defaultFile = "Images/apple.png",
-				id = "AppleButton1",
+				id = appleNumber,
 				onEvent = appleButton,
 			}
+			
 			sceneGroup:insert(appleButton1) -- add the new apple into the scene
 
 			appleTable[numOfApple] = appleButton1 --add apple to table
 			--physics.addBody(appleTable[numOfApple],{density=1,friction=0.4,bounce=1})
-			appleTable[numOfApple].myName="apple"
+			appleTable[numOfApple].myName = "apple"
+			
+			appleNumber = appleNumber + 1
 		end
 		
 	end
