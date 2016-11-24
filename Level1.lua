@@ -25,6 +25,7 @@ function scene:create()
 	local treeAnger = 0
 	local appleScore = 100 
 	local appleNumber = 1
+	local level  = 1
 
 	
 	
@@ -73,7 +74,7 @@ function scene:create()
 			--do some sort of animation to tell user not to tap the tree.
 			
 		else
-			if (treeAnger >= 1) then -- check if to use the skill or not
+			if (treeAnger > 1) then -- check if to use the skill or not
 				-- shake off all the apple
 				-- Michael says "Will do, sir!"
 				myTime = myTime - losetime - numOfApple*5
@@ -81,7 +82,6 @@ function scene:create()
 				for index = 0, numOfApple, 1 do
 					if (appleTable[index]~= nil) then
 						--print(appleTable[index].id) 
-						
 						apple = appleTable[index]
 						physics.addBody(apple, {density = 100, friction = 0, bounce = 0} )
 						
@@ -129,13 +129,11 @@ function scene:create()
 
 			updateScore()
 			myTime = myTime + 2
-			--numOfApple = numOfApple - 1
 		end
 	end
 
 	local function loadApple()
-		
-		--if (numOfApple <= 5) then
+		for index = 0, level, 1 do
 			numOfApple = numOfApple + 1
 			local appleButton1 = widget.newButton -- we need to declare the apple in this function
 			{
@@ -147,46 +145,62 @@ function scene:create()
 				id = appleNumber,
 				onEvent = appleButton,
 			}
-			
-			--Fix--sceneGroup:insert(appleButton1.id) -- how to insert this appletable into scene?
-
 			appleTable[numOfApple] = appleButton1 --add apple to table
 			--physics.addBody(appleTable[numOfApple],{density=1,friction=0.4,bounce=1})
 			appleTable[numOfApple].myName = "apple"
 			
 			appleNumber = appleNumber + 1
-		--end
+		end
+		
 		
 	end
-	
-	--[[local function tapApple(event)
-		if (event.object1.myName == "apple") then
-			event.object1:removeSelf()
-			event.object1.myName = nil
-		end
-	end]]--
 ----------------------------------------------------------------
 
 ---------------------------------------------------------------pause button
-local pause = false
+pausetemp = false
+
+local function pauseTab (event)
+	local phase = event.phase
+	if "began" == phase then 
+		if pausetemp == false then
+			print("Pause: check")
+			timer.pause(gl)
+			timer.pause(ut)
+			physics.pause()
+			pausetemp = true
+			treeButton1:removeEventListener( "tap", treeButton )
+			--Fix--appleButton1:removeEventListener( "tap", appleButton ) -- how stop them from being tapped?
+		
+			resume = display.newImage("Images/resume.png",display.contentCenterX, display.contentCenterY)
+			resume:scale(0.5,0.5)
+
+			function Resume(event)
+				transition.fadeOut(resume,{time = 500})
+				pausetemp = false
+				timer.resume(gl)
+				timer.resume(ut)
+				physics.start()
+				treeButton1:addEventListener( "tap", treeButton )
+			end
+
+			resume:addEventListener("tap",Resume)
+		
+
+		end
+	end
+end
 
 local pauseButton1 = widget.newButton
 {
-	left = display.contentCenterX -100,
-	top = 10,
+	left = display.contentCenterX -250,
+	top = 270,
 	width = 40,
 	height = 40,
-	defaultFile = "images/pause.png",
+	defaultFile = "Images/pause.png",
 	id = pauseButton,
-	onEvent = pause,
+	onEvent = pauseTab,
 } 
 
-local function pause (event)
-	local phase = event.phase
-	if "began" == phase then 
-
-	end
-end
 
 -------------------------------------------------------------	
 	local gameLoop = {}
@@ -216,21 +230,27 @@ end
 			 elseif myScore > 3500 and tick > 500 then
 			 	losetime = 7
 			 	tick = 500
+			 	level = math.random(1,2)
 			 elseif myScore > 5500 and tick > 450 then 
 			 	losetime = 10
 			 	tick = 450
+			 	level = math.random(1,2)
 			 elseif myScore > 7000 and tick > 400 then
 			  	losetime = 12
 			  	tick = 400
+			  	level = math.random(1,2)
 			 elseif myScore > 10000 and tick > 350 then
 			 	losetime = 15
 			 	tick = 350
+			 	level = math.random(1,3)
 			 elseif myScore > 13500 and tick > 300 then 
 			 	losetime = 18
 			 	tick = 300
+			 	level = math.random(1,3)
 			 elseif myScore > 20000 and tick > 150 then
 			  	losetime = 35
 			  	tick = 150
+			  	level = math.random(1,4)
 			end
 			loadApple()--load a new apple
 		end
@@ -240,8 +260,8 @@ end
 	function startGame()
 		--appleTable:addEventListener("tap", tapApple)
     	--Runtime:addEventListener("collision", onCollision)
-    	timer.performWithDelay(tick, gameLoop, 0)-- a new apple should appear every second
-    	timer.performWithDelay(1000, updateTimer, 0)
+    	gl = timer.performWithDelay(tick, gameLoop, 0)-- a new apple should appear every second
+    	ut = timer.performWithDelay(1000, updateTimer, 0)
 	end
 	
 	allTextToScreen()
