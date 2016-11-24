@@ -48,7 +48,7 @@ function scene:create()
 	local function gotoMenu(event)
 		flyOverBird:removeSelf()
 		fallingApple:removeSelf()
-		local composer = require("composer")
+		--local composer = require("composer")
 		local temp = require("Menu")
 		composer.gotoScene("Menu")
 	end	

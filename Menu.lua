@@ -51,9 +51,7 @@ function scene:create()
 ---------------------------------------------------------------------------Exit Wudget
 	local function exitButton( event )
 		local phase = event.phase
-			if "ended" == phase then
-				composer.gotoScene("loadingscene")--for now, need to change later
-			end
+			timer.performWithDelay(1000,closeapp)
 	end
 
 	local exitButton1 = widget.newButton
@@ -66,6 +64,16 @@ function scene:create()
 		id = "ExitButton1",
 		onEvent = exitButton,
 	}
+
+	local function closeapp()
+      	if  (system.getInfo("platform")=="android") then
+           native.requestExit()
+      	elseif (system.getInfo("platform")=="ios") then
+           os.exit() 
+        else 
+        	print("This is the simulator..")
+        end
+  	end
 ---------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------Setting Wudget
@@ -99,18 +107,16 @@ function scene:show()
 
 	end
 
- function scene:hide()
-	-- body
-	end
+function scene:hide()
+-- body
+end
 
-  function scene:destroy()
-	-- body
-	end
+function scene:destroy()
+-- body
+end
 --settingbutton:addEventListener("tap",settingButton)
 scene:addEventListener("create", scene)
 scene:addEventListener("show", scene)
 scene:addEventListener("hide", scene)
 scene:addEventListener("destory", scene)
-
-
 return scene

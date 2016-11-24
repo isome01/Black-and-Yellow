@@ -40,7 +40,7 @@ local text2 = display.newText("Volumn Off: ", 72, contentY - 70, nil, 20)
 
 	local volumnOn1 = widget.newButton
 	{
-		left = 120,
+		left = 130,
 		top = contentY -115,
 		width = 35,
 		height = 27,
@@ -68,11 +68,11 @@ local text2 = display.newText("Volumn Off: ", 72, contentY - 70, nil, 20)
 
 	local volumnOff1 = widget.newButton
 	{
-		left = 125,
+		left = 135,
 		top = contentY -85,
 		width = 35,
 		height = 27,
-		defaultFile = "Images/SoundOFF.png",
+		defaultFile = "Images/SoundOff.png",
 		id = "VolumnOff1",
 		onEvent = volumnOff,
 	}
