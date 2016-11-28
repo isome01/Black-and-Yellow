@@ -21,14 +21,12 @@ function scene:create()
 	local sceneGroup = self.view
 	local Warning = 0
 	local myScore = 0
-	local myTime = 60
+	local myTime = 1000
 	local treeAnger = 0
 	local appleScore = 100 
-	local appleNumber = 1
+	local appleNumber = 0
 	local level  = 1
 
-	
-	
 	--Here is where we will first blit our information onto the screen
 	local function allTextToScreen()
 		playerScore = display.newText("Score: "..myScore, 0, 20, nil, 20)
@@ -44,59 +42,60 @@ function scene:create()
 	local updateTimer = {}
 	function updateTimer:timer ( event )
 		myTime = myTime - 1
+		playerTimer.x = 0
 		if (myTime <= 0) then
 			print("quit the game")
 			 timer.cancel(event.source)
-			composer.gotoScene("Menu")
+			 myTime = 0
+			 playerTimer.text = "Time: "..myTime
+			--composer.gotoScene("Menu")
 		else 
 			playerTimer.text = "Time: "..myTime
-			playerTimer.x = 0
+			
 		end
 	end
 	----------------------------Tree: everytime the tree is tapped will store energy to itself. when it is full, it will shake off all of the apples.
-	local function errorMessage( event ) -- for error message
-	    if ( event.action == "clicked" ) then
-	        local i = event.index
-	        	if ( i == 1 ) then
-				-- dismiss the button
-				end
-		end
+	local function errorMessage() -- for error message
+	    local message1 = display.newText("Warning: ", 30, 130, nil, 20) 
+	    local message2 = display.newText("This tree is ticklish...", 50, 150, nil, 14) 
+	    message1:setFillColor(0.8,0.1,0.76)
+	    message2:setFillColor(0.4,0.1,0.76)
+	    transition.fadeOut( message1, { time=4000 } )
+	    transition.fadeOut( message2, { time=4000 } )
 	end
 	
 	local function treeButton()
 		treeAnger = treeAnger + 1 
 		--print("Tree is tapped.", treeAnger)
-		
+		print("before: ",numOfApple)
 		if (Warning == 0) then
 			Warning = Warning + 1
-			local alert = native.showAlert( "Warning.","This tree is ticklish...",{"Resume"}, errorMessage ) -- fix this alart later
+			errorMessage() -- fix this alart later
 			--print( "Tree: Don't tap me" )
 			--do some sort of animation to tell user not to tap the tree.
-			
 		else
-			if (treeAnger > 1) then -- check if to use the skill or not
+			if numOfApple >= 10 or treeAnger > 1  then -- the or statement does not work here.
+			-- check if to use the skill or not
 				-- shake off all the apple
 				-- Michael says "Will do, sir!"
+				print("after: ",numOfApple)
 				myTime = myTime - losetime - numOfApple*5
 				--print("numOfApple: ", numOfApple) -- checked
 				for index = 0, numOfApple, 1 do
 					if (appleTable[index]~= nil) then
 						--print(appleTable[index].id) 
 						apple = appleTable[index]
-						physics.addBody(apple, {density = 100, friction = 0, bounce = 0} )
-						
+						print("test:",appleTable[index])
+						physics.addBody(apple, {density = 100, friction = 0, bounce = 0} )						
 					else 
 						--print("This object is nil.")
-
 					end
 				end
-				
 				--We just add physics bodies to the table of objects, but this turned out to not work so hot: its detecting the values as nil values.
 				--numOfApple = 0
 				treeAnger = 0
 				numOfApple = 0
 				appleNumber = 1
-				
 			end
 		end
 	end
@@ -118,8 +117,6 @@ function scene:create()
 	local function appleButton( event )
 		local phase = event.phase
 		if "began" == phase then 
-			-- this if statement is only added because we are tapping the tree through the apple, so we
-			--have to reset treeAnger
 			numOfApple = numOfApple - 1
 			treeAnger = treeAnger - 1
 			--print("Apple number", event.target.id)
@@ -133,26 +130,25 @@ function scene:create()
 	end
 
 	local function loadApple()
-		for index = 0, level, 1 do
-			numOfApple = numOfApple + 1
-			local appleButton1 = widget.newButton -- we need to declare the apple in this function
-			{
-				left = math.random(170,440),
-				top = math.random(30,200),
-				width = 20,
-				height = 20,
-				defaultFile = "Images/apple.png",
-				id = appleNumber,
-				onEvent = appleButton,
-			}
-			appleTable[numOfApple] = appleButton1 --add apple to table
-			--physics.addBody(appleTable[numOfApple],{density=1,friction=0.4,bounce=1})
-			appleTable[numOfApple].myName = "apple"
-			
-			appleNumber = appleNumber + 1
-		end
-		
-		
+		--if numOfApple < 4 then-- something is wrong with numOfApple
+			for index3 = 1, level, 1 do
+				numOfApple = numOfApple + 1
+				local appleButton1 = widget.newButton -- we need to declare the apple in this function
+				{
+					left = math.random(170,440),
+					top = math.random(30,200),
+					width = 20,
+					height = 20,
+					defaultFile = "Images/apple.png",
+					id = appleNumber,
+					onEvent = appleButton,
+				}
+				appleTable[numOfApple] = appleButton1 --add apple to table
+				--physics.addBody(appleTable[numOfApple],{density=1,friction=0.4,bounce=1})
+				appleTable[numOfApple].myName = "apple"
+				appleNumber = appleNumber + 1
+			end
+		--end
 	end
 ----------------------------------------------------------------
 
@@ -201,32 +197,46 @@ local pauseButton1 = widget.newButton
 	onEvent = pauseTab,
 } 
 
+-------------------------------------------------------------endGame
+
+local function gameOver ( event )
+	if (event.action == clicked) then
+		local i = event.action
+		if (i == 1) then
+			for index1 = 0, numOfApple+1, 1 do
+				if (appleTable[index1]~= nil) then
+					--print(appleTable[index].id) 
+					apple = appleTable[index1]
+					physics.addBody(apple, {density = 100, friction = 0, bounce = 0} )	
+				end
+				
+			end
+		end
+	end
+end
+
 
 -------------------------------------------------------------	
 	local gameLoop = {}
 	function gameLoop:timer ( event )
 		if (myTime <= 0) then
 			 timer.cancel(event.source)
-			 for index = 0, numOfApple, 1 do
-				if (appleTable[index]~= nil) then
-					--print(appleTable[index].id) 
-					apple = appleTable[index]
-					physics.addBody(apple, {density = 100, friction = 0, bounce = 0} )	
-				else 
-					--print("This object is nil.")
-				end
-			end
+			local endGame = native.showAlert( "Game Over >.<", "Press Ok to restart", {"OK"}, gameOver )
+			composer.gotoScene("Menu")
 
 		else 
 			 if myScore > 500 and tick > 800 then
 			 	losetime = 1
 			 	tick = 800
+			 	level = math.random(1,2)
 			 elseif myScore > 1000 and tick > 700 then
 			 	losetime = 2
 			 	tick = 700
+			 	level = math.random(1,3)
 			 elseif myScore> 2000 and tick > 600 then
 			 	losetime = 5
 			 	tick = 600
+			 	level = math.random(1,4)
 			 elseif myScore > 3500 and tick > 500 then
 			 	losetime = 7
 			 	tick = 500
@@ -234,23 +244,23 @@ local pauseButton1 = widget.newButton
 			 elseif myScore > 5500 and tick > 450 then 
 			 	losetime = 10
 			 	tick = 450
-			 	level = math.random(1,2)
+			 	level = math.random(1,3)
 			 elseif myScore > 7000 and tick > 400 then
 			  	losetime = 12
 			  	tick = 400
-			  	level = math.random(1,2)
+			  	level = math.random(1,5)
 			 elseif myScore > 10000 and tick > 350 then
 			 	losetime = 15
 			 	tick = 350
-			 	level = math.random(1,3)
+			 	level = math.random(1,6)
 			 elseif myScore > 13500 and tick > 300 then 
 			 	losetime = 18
 			 	tick = 300
-			 	level = math.random(1,3)
+			 	level = math.random(1,7)
 			 elseif myScore > 20000 and tick > 150 then
 			  	losetime = 35
 			  	tick = 150
-			  	level = math.random(1,4)
+			  	level = math.random(1,10)
 			end
 			loadApple()--load a new apple
 		end
