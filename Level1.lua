@@ -21,11 +21,11 @@ function scene:create()
 	local sceneGroup = self.view
 	local Warning = 0
 	local myScore = 0
-	local myTime = 1000
+	local myTime = 60
 	local treeAnger = 0
 	local appleScore = 100 
 	local appleNumber = 0
-	local level  = 1
+	local level = 1
 
 	--Here is where we will first blit our information onto the screen
 	local function allTextToScreen()
@@ -67,10 +67,10 @@ function scene:create()
 	local function treeButton()
 		treeAnger = treeAnger + 1 
 		--print("Tree is tapped.", treeAnger)
-		print("before: ",numOfApple)
+		--print("before: ",numOfApple)
 		if (Warning == 0) then
 			Warning = Warning + 1
-			errorMessage() -- fix this alart later
+			errorMessage() -- fix this alert later
 			--print( "Tree: Don't tap me" )
 			--do some sort of animation to tell user not to tap the tree.
 		else
@@ -78,24 +78,29 @@ function scene:create()
 			-- check if to use the skill or not
 				-- shake off all the apple
 				-- Michael says "Will do, sir!"
-				print("after: ",numOfApple)
+				--print("after: ",numOfApple)
 				myTime = myTime - losetime - numOfApple*5
 				--print("numOfApple: ", numOfApple) -- checked
-				for index = 0, numOfApple, 1 do
+				if numOfApple == 0 then
+					
+				end
+				for index = 0, numOfApple - 1, 1 do
+				
 					if (appleTable[index]~= nil) then
-						--print(appleTable[index].id) 
-						apple = appleTable[index]
-						print("test:",appleTable[index])
-						physics.addBody(apple, {density = 100, friction = 0, bounce = 0} )						
+						physics.addBody(appleTable[index], {density = 100, friction = 0, bounce = 0} )	
+						print(index)
 					else 
-						--print("This object is nil.")
+						print("This object is nil.", index)
 					end
 				end
 				--We just add physics bodies to the table of objects, but this turned out to not work so hot: its detecting the values as nil values.
 				--numOfApple = 0
 				treeAnger = 0
-				numOfApple = 0
-				appleNumber = 1
+				
+				--[[Because the apples are susceptible to being touched after falling, we won't reset any
+				numOfApple indexes or appleNumber inxedes. We wait until they are touches and for the event 
+				that they're touched only.
+				]]
 			end
 		end
 	end
@@ -117,22 +122,41 @@ function scene:create()
 	local function appleButton( event )
 		local phase = event.phase
 		if "began" == phase then 
-			numOfApple = numOfApple - 1
-			treeAnger = treeAnger - 1
+			ID = event.target.id
+			print(ID, "was touched.")
 			--print("Apple number", event.target.id)
 			event.target:removeSelf()        -- Also remember to remove from display
 		    appleTable[event.target.id] = nil         -- We remove object from table
 			myScore = myScore + appleScore -- for some reason this doesn't work as excepted.
-
+		
 			updateScore()
 			myTime = myTime + 2
+			--We are moving each one down
+			for index = ID, numOfApple - 1, 1 do
+				
+				if (index + 1 ~= numOfApple) then --if we have reached the last apple
+					appleTable[index] = appleTable[index + 1]
+					appleTable[index].id = index
+				end
+			end
+			
+			numOfApple = numOfApple - 1
+			
+			if (treeAnger > 0) then
+				treeAnger = treeAnger - 1
+				--[[Michael: I figured we dont want any nonsense of the treeAnger having a negative value, which if 
+				kept, would allow the user to tap on the tree many more times; we would reward the player for 
+				tapping an apple, when really it's their only job to do so. Let's not give hand outs now.
+				]]
+			end
+			
+			appleNumber = appleNumber - 1
 		end
 	end
 
 	local function loadApple()
 		--if numOfApple < 4 then-- something is wrong with numOfApple
 			for index3 = 1, level, 1 do
-				numOfApple = numOfApple + 1
 				local appleButton1 = widget.newButton -- we need to declare the apple in this function
 				{
 					left = math.random(170,440),
@@ -143,9 +167,11 @@ function scene:create()
 					id = appleNumber,
 					onEvent = appleButton,
 				}
+				
 				appleTable[numOfApple] = appleButton1 --add apple to table
 				--physics.addBody(appleTable[numOfApple],{density=1,friction=0.4,bounce=1})
 				appleTable[numOfApple].myName = "apple"
+				numOfApple = numOfApple + 1
 				appleNumber = appleNumber + 1
 			end
 		--end
@@ -200,16 +226,14 @@ local pauseButton1 = widget.newButton
 -------------------------------------------------------------endGame
 
 local function gameOver ( event )
-	if (event.action == clicked) then
+	if (event.action) then
 		local i = event.action
-		if (i == 1) then
-			for index1 = 0, numOfApple+1, 1 do
+		print("Passed: Game Over.")
+		if (i == "clicked") then
+			for index1 = 0, numOfApple - 1, 1 do
 				if (appleTable[index1]~= nil) then
-					--print(appleTable[index].id) 
-					apple = appleTable[index1]
-					physics.addBody(apple, {density = 100, friction = 0, bounce = 0} )	
-				end
-				
+					physics.addBody(appleTable[index1], {density = 100, friction = 0, bounce = 0} )	
+				end				
 			end
 		end
 	end
