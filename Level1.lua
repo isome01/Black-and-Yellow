@@ -30,7 +30,9 @@ function scene:create()
 	--Here is where we will first blit our information onto the screen
 	local function allTextToScreen()
 		playerScore = display.newText("Score: "..myScore, 0, 20, nil, 20)
+		playerScore:setFillColor(0.5,0.8,0.1)
 		playerTimer = display.newText("Time: "..myTime, 0, 40, nil, 20)
+		playerTimer:setFillColor(0.5,0.8,0.1)
 	end
 	--We call this function to update the score for each time an apple has been "tapped".
 	local function updateScore()
